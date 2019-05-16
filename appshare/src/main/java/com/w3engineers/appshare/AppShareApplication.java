@@ -12,8 +12,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.w3engineers.appshare.util.lib.InAppShareWebController;
+import com.w3engineers.ext.strom.App;
 
-public class AppShareApplication extends Application {
+public class AppShareApplication extends App {
 
     public static Context context;
 

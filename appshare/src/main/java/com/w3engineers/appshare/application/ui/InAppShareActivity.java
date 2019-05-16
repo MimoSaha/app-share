@@ -12,6 +12,9 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -53,7 +56,7 @@ public class InAppShareActivity extends BaseActivity {
 
     private ProgressBar progressBar;
     private ScrollView scrollView;
-    private TextView wifiId, wifiUrl;
+    private TextView wifiId, wifiPass, wifiUrl;
     private ImageView qrCode;
 
     @Override
@@ -99,7 +102,8 @@ public class InAppShareActivity extends BaseActivity {
     private void initUI() {
         progressBar = findViewById(R.id.appShare_progress);
         scrollView = findViewById(R.id.scroll_view);
-        wifiId = findViewById(R.id.share_wifi_id_pass);
+        wifiId = findViewById(R.id.share_wifi_id);
+        wifiPass = findViewById(R.id.share_wifi_id_pass);
         wifiUrl = findViewById(R.id.text_view_url);
         qrCode = findViewById(R.id.image_view_qr_code);
     }
@@ -115,7 +119,8 @@ public class InAppShareActivity extends BaseActivity {
                     scrollView.setVisibility(View.VISIBLE);
 
                     // Expose all server side info
-                    wifiId.setText(NetworkConfigureUtil.getInstance().getNetworkConfig());
+                    wifiId.setText("\"" + NetworkConfigureUtil.getInstance().getNetworkName() + "\"");
+                    wifiPass.setText(getPasswordText());
                     wifiUrl.setText(InAppShareUtil.getInstance().serverAddress);
                     qrCode.setImageBitmap(InAppShareUtil.getInstance().serverAddressBitmap);
 
@@ -124,6 +129,19 @@ public class InAppShareActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private SpannableString getPasswordText() {
+        String pass = NetworkConfigureUtil.getInstance().getNetworkPass();
+        String passText = String.format(getResources().getString(R.string.using_password), pass);
+        SpannableString spannableString = new SpannableString(passText);
+
+        int startIndex = passText.length() - pass.length();
+
+        spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorGradientPrimary)),
+                startIndex, passText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString;
     }
 
     @Override

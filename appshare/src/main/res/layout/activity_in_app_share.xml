@@ -91,15 +91,25 @@
                 app:layout_constraintTop_toBottomOf="@+id/step_1_view" />
 
             <TextView
+                android:id="@+id/share_wifi_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="@color/colorGradientPrimary"
+                android:textSize="@dimen/text_size_16"
+                app:layout_constraintTop_toBottomOf="@+id/share_wifi_network" />
+
+            <TextView
                 android:id="@+id/share_wifi_id_pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_5"
                 android:gravity="center"
-                android:text="@string/hotspot_id_pass"
-                android:textColor="@color/colorAccent"
+                android:fontFamily="@font/poppins_regular"
                 android:textSize="@dimen/text_size_16"
-                app:layout_constraintTop_toBottomOf="@+id/share_wifi_network" />
+                app:layout_constraintTop_toBottomOf="@+id/share_wifi_id" />/>
 
             <ImageView
                 android:id="@+id/step_2_view"
@@ -206,7 +216,7 @@
                 android:fontFamily="@font/poppins_regular"
                 android:gravity="center"
                 android:text="@string/url_loading"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorGradientPrimary"
                 android:textSize="@dimen/text_size_16"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

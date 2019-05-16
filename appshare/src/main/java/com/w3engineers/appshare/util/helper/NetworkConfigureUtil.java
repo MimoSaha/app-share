@@ -180,9 +180,16 @@ public class NetworkConfigureUtil {
     }
 
     @NonNull
-    public String getNetworkConfig() {
-        return String.format(context.getString(R.string.hotspot_id_pass), SSID_Name, SSID_Key);
+    public String getNetworkPass() {
+        return SSID_Key;
     }
+
+    @NonNull
+    public String getNetworkName() {
+        return SSID_Name;
+    }
+
+
 
     /**
      * Reset all properties when in app share process is completed
