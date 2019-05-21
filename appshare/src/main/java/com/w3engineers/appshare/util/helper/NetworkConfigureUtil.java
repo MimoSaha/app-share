@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 public class NetworkConfigureUtil {
 
     @NonNull
-    public String SSID_Key = "m3sht3st";
+    public String SSID_Key = "m3s4rn9t3st";
     @NonNull
     public String SSID_Name = "";
     private WifiManager wifiManager;
