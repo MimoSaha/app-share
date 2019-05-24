@@ -6,10 +6,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 
-import com.w3engineers.appshare.AppShareApplication;
-import com.w3engineers.appshare.R;
 import com.w3engineers.appshare.application.ui.InAppShareControl;
-import com.w3engineers.appshare.util.lib.InAppShareWebController;
 
 import java.lang.reflect.Method;
 

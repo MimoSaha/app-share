@@ -11,6 +11,8 @@ Proprietary and confidential
 import android.content.Context;
 import android.content.Intent;
 
+import com.w3engineers.appshare.util.lib.InAppShareWebController;
+
 public class InAppShareControl {
 
 
@@ -30,6 +32,7 @@ public class InAppShareControl {
     public void startInAppShareProcess(Context context, AppShareCallback appShareCallback) {
         this.context = context;
         setAppShareCallback(appShareCallback);
+        InAppShareWebController.getInAppShareWebController().initContext(context);
         Intent intent = new Intent(context, InAppShareActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
