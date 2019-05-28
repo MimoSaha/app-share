@@ -66,14 +66,14 @@ public class NetworkConfigureUtil {
     public boolean startRouterConfigureProcess() {
 
         try {
-            if (isApOn()) {
+            /*if (isApOn()) {
                 Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
                 WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
 
                 SSID_Name = wifiConfig.SSID;
                 triggerNetworkCall();
 
-            } else {
+            } else {*/
                 InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
                 if (appShareCallback != null) {
                     appShareCallback.closeRmService();
@@ -88,7 +88,7 @@ public class NetworkConfigureUtil {
                 }
 
                 hotspotConfigure();
-            }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class NetworkConfigureUtil {
         wifiManager.setWifiEnabled(false);
         WifiConfiguration wifiConfiguration = new WifiConfiguration();
 
-        String networkNamePrefix = "RM-";
+        String networkNamePrefix = "Mesh-";
         SSID_Name = networkNamePrefix + "AppShare";
 
         wifiConfiguration.SSID = SSID_Name;
