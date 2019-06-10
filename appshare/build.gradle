@@ -46,6 +46,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation "android.arch.lifecycle:viewmodel:1.1.1"
 
-    implementation 'com.github.w3-engineers:strom:0.0.11'
+    implementation 'com.github.w3-engineers:strom:0.0.14'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
 //    api deps.strom_remote
 }

@@ -26,6 +26,8 @@ import com.w3engineers.appshare.util.helper.InAppShareUtil;
 import com.w3engineers.appshare.util.helper.NetworkConfigureUtil;
 import com.w3engineers.ext.strom.application.ui.base.BaseActivity;
 
+import pl.droidsonroids.gif.GifImageView;
+
 /*
  * ============================================================================
  * Copyright (C) 2019 W3 Engineers Ltd. - All Rights Reserved.
@@ -54,7 +56,7 @@ public class InAppShareActivity extends BaseActivity {
         return R.color.colorPrimary;
     }
 
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private ScrollView scrollView;
     private TextView wifiId, wifiPass, wifiUrl;
     private ImageView qrCode;
@@ -86,7 +88,8 @@ public class InAppShareActivity extends BaseActivity {
                 intent.setData(Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, 119);
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS},101);
+                appShareStart();
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS},101);
             }
         } else {
             appShareStart();

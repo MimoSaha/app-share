@@ -24,19 +24,18 @@
         android:background="@drawable/toolbar_shadow"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <ProgressBar
+    <pl.droidsonroids.gif.GifImageView
         android:id="@+id/appShare_progress"
-        android:layout_width="@dimen/width_55"
-        android:layout_height="@dimen/height_55"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="@dimen/height_45"
         android:indeterminate="true"
-        android:indeterminateTint="@color/colorPrimary"
-        android:indeterminateTintMode="src_atop"
         android:visibility="gone"
+        android:src="@mipmap/load"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UnusedAttribute" />
+        />
 
     <ScrollView
         android:id="@+id/scroll_view"
