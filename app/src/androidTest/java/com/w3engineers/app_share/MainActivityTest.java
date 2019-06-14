@@ -36,8 +36,6 @@ public class MainActivityTest {
 
     public ActivityTestRule<InAppShareActivity> mActivityTestRule1 = new ActivityTestRule<>(InAppShareActivity.class);
 
-    public UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-
     @Test
     public void mainActivityTest() {
 
