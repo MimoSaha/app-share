@@ -110,8 +110,8 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = "mimosaha"
+    key = "511bddb03987d20597713855bd9ad385bcaa97e5"
     configurations = ['archives']
     pkg {
         repo = project.getProperty("bintrayRepo")  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
