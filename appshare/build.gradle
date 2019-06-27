@@ -13,7 +13,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.2.0'
+        versionName '1.2.3'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -52,21 +52,30 @@ dependencies {
 //    api deps.strom_remote
 }
 
+def artifact = new Properties()
+//artifact.load(new FileInputStream("deploy.settings"))
+
+version= "1.2.3"
+group="app-share"
+
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
             project {
                 packaging 'aar'
-                // Add your description here
-                description project.getProperty("libraryDescription")
-                name project.getProperty("libraryName")
-                url project.getProperty("siteUrl")
-                // Set your license
+
+                groupId "app-share"
+                artifactId "com.w3engineers.appshare"
+                version "1.2.3"
+                name "app-share" // pom.project.name must be same as bintray.pkg.name
+                url "https://github.com/mimosaha/app-share"
+
                 licenses {
                     license {
                         name project.getProperty("licenseName")
                         url project.getProperty("licenseUrl")
+                        distribution 'repo'
                     }
                 }
                 developers {
@@ -77,99 +86,62 @@ install {
                     }
                 }
                 scm {
-                    connection project.getProperty("gitUrl")
-                    developerConnection project.getProperty("gitUrl")
-                    url project.getProperty("siteUrl")
+
+                    connection "https://github.com/mimosaha/app-share.git"
+                    developerConnection "https://github.com/mimosaha/app-share.git"
+                    url "https://github.com/mimosaha/app-share"
+
+//                    connection project.getProperty("gitUrl")
+//                    developerConnection project.getProperty("gitUrl")
+//                    url project.getProperty("siteUrl")
                 }
             }
         }
     }
 }
 
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-}
-
-task androidJavadocsJar(type: Jar) {
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
-}
-task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-artifacts {
-    archives androidSourcesJar
-    archives androidJavadocsJar
-
-}
-
 Properties properties = new Properties()
-// 加载本地配置
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+File propFile = "${System.properties['user.home']}${File.separator}.gradle${File.separator}bintray.properties" as File
+properties.load(propFile.newDataInputStream())
 
 bintray {
     user = 'mimosaha'
-    key = '511bddb03987d20597713855bd9ad385bcaa97e5'
+    key = '983aa7860dc576013fd2e5307a7d8defc0e0dba9'
+
     configurations = ['archives']
     pkg {
-        repo = 'app-share'  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
-        name = 'app-share' //需更改，这个名字就是你在Bintray上创建Package的名字，这里会查询，如果此包不存在就会创建一个。
-        //组织名称 organization
-        websiteUrl = 'https://github.com/mimosaha/app-share'
-        vcsUrl = 'https://github.com/mimosaha/app-share.git'
+        repo = "app-share"
+        name = "app-share"
+        websiteUrl = "https://github.com/mimosaha/app-share"
+        vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = '1.2.0'
-            vcsTag = '1.2.0'
+            name = "1.2.3"
         }
 
-        licenses = ["Apache-2.0"]
+        licenses = ['Apache-2.0']
         publish = true
+
     }
 }
 
-//ext {
-//    bintrayRepo = project.getProperty("bintrayRepo")
-//    bintrayName = project.getProperty("bintrayName")   // Replace by your library name, has to be same as your library module name
-//
-//    publishedGroupId = 'com.github.mimosaha'
-//    libraryName = 'app-share'  //  Replace by your library name, has to be same as your library module name
-//    artifact = 'app-share'     // Replace by your library name, has to be same as your library module name
-//
-//    libraryDescription = 'This is description about this library'
-//
-//    // Your github repo link
-//    siteUrl = 'https://github.com/mimosaha/app-share' // Replace by your url
-//    gitUrl = 'https://github.com/mimosaha/app-share.git' // Replace by your url
-//    githubRepository= 'mimosaha/app-share' // Replace by your url
-//
-//    libraryVersion = '1.0.0' // Increase whenever you update library version
-//
-//    developerId = 'mimosaha' // Replace by your name
-//    developerName = 'MimoSaha' // Replace by your name
-//    developerEmail = 'mimosaha@w3engineers.com' // Replace by your email
-//
-//    licenseName = 'The Apache Software License, Version 2.0'
-//    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//    allLicenses = ["Apache-2.0"]
-//}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
 
-//bintray {
-//    user = project.getProperty("bintray.user")
-//    key = project.getProperty("bintray.apikey")
-//    pkg {
-//        repo = project.getProperty("bintrayRepo")
-//        name = project.getProperty("bintrayName")
-//        licenses = project.getProperty("licenseName")
-//        vcsUrl = project.getProperty("siteUrl")
-//        version {
-//            name = project.getProperty("libraryVersion")
-//        }
-//    }
-//    filesSpec {
-//        from 'sdk/build/outputs/aar/sdk-release.aar'
-//        into '.'
-//    }
-//}
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+    // options.encoding = 'UTF-8'
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
