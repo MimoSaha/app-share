@@ -13,7 +13,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.2.3'
+        versionName '1.2.4'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -55,7 +55,7 @@ dependencies {
 def artifact = new Properties()
 //artifact.load(new FileInputStream("deploy.settings"))
 
-version= "1.2.3"
+version= "1.2.4"
 group="app-share"
 
 install {
@@ -67,7 +67,7 @@ install {
 
                 groupId "app-share"
                 artifactId "com.w3engineers.appshare"
-                version "1.2.3"
+                version "1.2.4"
                 name "app-share" // pom.project.name must be same as bintray.pkg.name
                 url "https://github.com/mimosaha/app-share"
 
@@ -116,7 +116,7 @@ bintray {
         vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = "1.2.3"
+            name = "1.2.4"
         }
 
         licenses = ['Apache-2.0']
