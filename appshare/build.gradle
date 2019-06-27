@@ -13,7 +13,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName project.getProperty("libraryVersion")
+        versionName '1.2.0'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -110,20 +110,51 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 bintray {
-    user = "mimosaha"
-    key = "511bddb03987d20597713855bd9ad385bcaa97e5"
+    user = 'mimosaha'
+    key = '511bddb03987d20597713855bd9ad385bcaa97e5'
     configurations = ['archives']
     pkg {
-        repo = project.getProperty("bintrayRepo")  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
-        name = project.getProperty("bintrayName") //需更改，这个名字就是你在Bintray上创建Package的名字，这里会查询，如果此包不存在就会创建一个。
+        repo = 'app-share'  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
+        name = 'app-share' //需更改，这个名字就是你在Bintray上创建Package的名字，这里会查询，如果此包不存在就会创建一个。
         //组织名称 organization
-        websiteUrl = project.getProperty("siteUrl")
-        vcsUrl = project.getProperty("gitUrl")
-        licenses = project.getProperty("allLicenses")
+        websiteUrl = 'https://github.com/mimosaha/app-share'
+        vcsUrl = 'https://github.com/mimosaha/app-share.git'
+
+        version {
+            name = '1.2.0'
+            vcsTag = '1.2.0'
+        }
+
+        licenses = ["Apache-2.0"]
         publish = true
     }
 }
 
+//ext {
+//    bintrayRepo = project.getProperty("bintrayRepo")
+//    bintrayName = project.getProperty("bintrayName")   // Replace by your library name, has to be same as your library module name
+//
+//    publishedGroupId = 'com.github.mimosaha'
+//    libraryName = 'app-share'  //  Replace by your library name, has to be same as your library module name
+//    artifact = 'app-share'     // Replace by your library name, has to be same as your library module name
+//
+//    libraryDescription = 'This is description about this library'
+//
+//    // Your github repo link
+//    siteUrl = 'https://github.com/mimosaha/app-share' // Replace by your url
+//    gitUrl = 'https://github.com/mimosaha/app-share.git' // Replace by your url
+//    githubRepository= 'mimosaha/app-share' // Replace by your url
+//
+//    libraryVersion = '1.0.0' // Increase whenever you update library version
+//
+//    developerId = 'mimosaha' // Replace by your name
+//    developerName = 'MimoSaha' // Replace by your name
+//    developerEmail = 'mimosaha@w3engineers.com' // Replace by your email
+//
+//    licenseName = 'The Apache Software License, Version 2.0'
+//    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//    allLicenses = ["Apache-2.0"]
+//}
 
 //bintray {
 //    user = project.getProperty("bintray.user")
