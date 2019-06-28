@@ -13,7 +13,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.2.4'
+        versionName '1.2.5'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -55,7 +55,7 @@ dependencies {
 def artifact = new Properties()
 //artifact.load(new FileInputStream("deploy.settings"))
 
-version= "1.2.4"
+version= "1.2.5"
 group="app-share"
 
 install {
@@ -65,10 +65,10 @@ install {
             project {
                 packaging 'aar'
 
-                groupId "app-share"
-                artifactId "com.w3engineers.appshare"
-                version "1.2.4"
-                name "app-share" // pom.project.name must be same as bintray.pkg.name
+//                groupId "app-share"
+//                artifactId "app-share"
+                version "1.2.5"
+                name "com.w3engineers.appshare" // pom.project.name must be same as bintray.pkg.name
                 url "https://github.com/mimosaha/app-share"
 
                 licenses {
@@ -105,21 +105,22 @@ File propFile = "${System.properties['user.home']}${File.separator}.gradle${File
 properties.load(propFile.newDataInputStream())
 
 bintray {
-    user = 'mimosaha'
-    key = '983aa7860dc576013fd2e5307a7d8defc0e0dba9'
+
+    user = "mimosaha"
+    key = "511bddb03987d20597713855bd9ad385bcaa97e5"
 
     configurations = ['archives']
     pkg {
         repo = "app-share"
-        name = "app-share"
+        name = "appshare"
         websiteUrl = "https://github.com/mimosaha/app-share"
         vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = "1.2.4"
+            name = "1.2.5"
         }
 
-        licenses = ['Apache-2.0']
+        licenses = ["Apache-2.0"]
         publish = true
 
     }
