@@ -7,7 +7,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName "1.2.6"
+        versionName "1.2.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
@@ -20,9 +20,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
+    /*dataBinding {
         enabled = true
-    }
+    }*/
     packagingOptions {
         exclude 'LICENSE.txt'
     }
@@ -40,7 +40,7 @@ dependencies {
 
 //    implementation 'com.github.MimoSaha:app-share:1.1.7'
     testImplementation 'junit:junit:4.12'
-    implementation 'com.github.w3-engineers:strom:0.0.14'
+//    implementation 'com.github.w3-engineers:strom:0.0.14'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'

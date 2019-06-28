@@ -1,6 +1,5 @@
 package com.w3engineers.appshare.application.ui;
 
-import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
@@ -8,23 +7,26 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.w3engineers.appshare.R;
 import com.w3engineers.appshare.util.helper.InAppShareUtil;
 import com.w3engineers.appshare.util.helper.NetworkConfigureUtil;
-import com.w3engineers.ext.strom.application.ui.base.BaseActivity;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -34,37 +36,25 @@ import pl.droidsonroids.gif.GifImageView;
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
  */
-public class InAppShareActivity extends BaseActivity {
+public class InAppShareActivity extends AppCompatActivity {
 
     private InAppShareViewModel inAppShareViewModel;
-
-//    private ActivityInAppShareBinding activityInAppShareBinding;
-//    private ActivityAppShareBinding activityInAppShareBinding;
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_in_app_share;
-    }
-
-    @Override
-    protected int getToolbarId() {
-        return R.id.toolbar;
-    }
-
-    @Override
-    protected int statusBarColor() {
-        return R.color.colorPrimary;
-    }
-
+    private Toolbar toolbar;
     private GifImageView progressBar;
     private ScrollView scrollView;
     private TextView wifiId, wifiPass, wifiUrl;
     private ImageView qrCode;
 
     @Override
-    protected void startUI() {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_in_app_share);
 
-//        activityInAppShareBinding = (ActivityAppShareBinding) getViewDataBinding();
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        setStatusBarColor();
 
         setTitle(getString(R.string.settings_share_app));
         if (getSupportActionBar() != null) {
@@ -89,11 +79,28 @@ public class InAppShareActivity extends BaseActivity {
                 startActivityForResult(intent, 119);
             } else {
                 appShareStart();
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_SETTINGS},101);
             }
         } else {
             appShareStart();
         }
+    }
+
+    private void setStatusBarColor() {
+
+        int statusBarColor = statusBarColor();
+
+        if (statusBarColor > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = this.getWindow();
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(ContextCompat.getColor(this, statusBarColor));
+            }
+        }
+    }
+
+    protected int statusBarColor() {
+        return R.color.colorPrimary;
     }
 
     private void appShareStart() {
@@ -161,9 +168,9 @@ public class InAppShareActivity extends BaseActivity {
     }
 
     @Override
-    protected void stopUI() {
-        super.stopUI();
-        // Stop In app share server
+    protected void onDestroy() {
+        super.onDestroy();
+
         inAppShareViewModel.stopServerProcess();
         inAppShareViewModel.resetAllInfo();
     }

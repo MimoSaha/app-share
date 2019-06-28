@@ -15,8 +15,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.w3engineers.appshare.R;
+import com.w3engineers.appshare.application.ui.InAppShareControl;
 import com.w3engineers.appshare.util.lib.InstantServer;
-import com.w3engineers.ext.strom.App;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,7 +66,7 @@ public class InAppShareUtil {
         Bitmap bitmap = null;
 
         try {
-            Context context = App.getContext();
+            Context context = InAppShareControl.getInstance().getAppShareContext();
 
             BitMatrix bitMatrix = new MultiFormatWriter().encode(Value, BarcodeFormat.QR_CODE,
                     150, 150, null);
@@ -130,7 +130,7 @@ public class InAppShareUtil {
      */
     @Nullable
     public String getBackUpApkPath() {
-        Context context = App.getContext();
+        Context context = InAppShareControl.getInstance().getAppShareContext();
 
         try {
             String myApplicationName = context.getResources().getString(R.string.app_name) + ".apk";

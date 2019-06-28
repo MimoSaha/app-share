@@ -10,13 +10,13 @@ android {
     compileSdkVersion 28
 
     group='com.w3engineers.appshare'
-    version "1.2.6"
+    version "1.2.7"
 
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.2.6'
+        versionName '1.2.7'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         archivesBaseName = "appshare"
@@ -31,9 +31,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
+    /*dataBinding {
         enabled = true
-    }
+    }*/
 }
 
 //apply from: 'https://raw.githubusercontent.com/mimosaha/maven-upload/master/bintray.gradle'
@@ -53,7 +53,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation "android.arch.lifecycle:viewmodel:1.1.1"
 
-    implementation 'com.github.w3-engineers:strom:0.0.14'
+//    implementation 'com.github.w3-engineers:strom:0.0.14'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.17'
 //    api deps.strom_remote
 }
@@ -73,7 +73,7 @@ install {
 
 //                groupId "com.w3engineers.appshare"
 //                artifactId "appshare"
-                version "1.2.6"
+                version "1.2.7"
                 name "appshare" // pom.project.name must be same as bintray.pkg.name
                 url "https://github.com/mimosaha/app-share"
 
@@ -123,7 +123,7 @@ bintray {
         vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = "1.2.6"
+            name = "1.2.7"
         }
 
         licenses = ["Apache-2.0"]

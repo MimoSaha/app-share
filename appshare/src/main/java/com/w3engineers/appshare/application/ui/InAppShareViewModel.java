@@ -1,6 +1,7 @@
 package com.w3engineers.appshare.application.ui;
 
 import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -9,12 +10,11 @@ import android.support.annotation.Nullable;
 import com.w3engineers.appshare.util.helper.InAppShareUtil;
 import com.w3engineers.appshare.util.helper.NetworkConfigureUtil;
 import com.w3engineers.appshare.util.lib.InstantServer;
-import com.w3engineers.ext.strom.application.ui.base.BaseRxAndroidViewModel;
 
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /*
  * ============================================================================
@@ -23,7 +23,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * Proprietary and confidential
  */
 
-public class InAppShareViewModel extends BaseRxAndroidViewModel implements InAppShareUtil.InAppShareCallback,
+public class InAppShareViewModel extends AndroidViewModel implements InAppShareUtil.InAppShareCallback,
         NetworkConfigureUtil.NetworkCallback {
 
     @Nullable
@@ -125,7 +125,7 @@ public class InAppShareViewModel extends BaseRxAndroidViewModel implements InApp
      * When network is ready then we start our In-App share server
      */
     private void initServerProcess() {
-        getCompositeDisposable().add(serverInitSingleCallable()
+        compositeDisposable.add(serverInitSingleCallable()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(qrCode -> {}, Throwable::printStackTrace));

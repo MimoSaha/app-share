@@ -1,17 +1,17 @@
 package com.w3engineers.app_share;
 
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
 import com.w3engineers.appshare.application.ui.InAppShareControl;
-import com.w3engineers.ext.strom.application.ui.base.BaseActivity;
 
-public class MainActivity extends BaseActivity {
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main;
-    }
+public class MainActivity extends AppCompatActivity {
 
     @Override
-    protected void startUI() {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         findViewById(R.id.open).setOnClickListener(v -> InAppShareControl.getInstance()
                 .startInAppShareProcess(MainActivity.this, null));
     }
