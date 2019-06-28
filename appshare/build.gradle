@@ -9,14 +9,17 @@ android {
 
     compileSdkVersion 28
 
+    group='com.w3engineers.appshare'
+    version "1.2.6"
+
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.2.5'
+        versionName '1.2.6'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        archivesBaseName = "appshare"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -27,6 +30,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    dataBinding {
+        enabled = true
     }
 }
 
@@ -55,8 +61,8 @@ dependencies {
 def artifact = new Properties()
 //artifact.load(new FileInputStream("deploy.settings"))
 
-version= "1.2.5"
-group="app-share"
+//version= "1.2.5"
+//group="app-share"
 
 install {
     repositories.mavenInstaller {
@@ -65,10 +71,10 @@ install {
             project {
                 packaging 'aar'
 
-//                groupId "app-share"
-//                artifactId "app-share"
-                version "1.2.5"
-                name "com.w3engineers.appshare" // pom.project.name must be same as bintray.pkg.name
+//                groupId "com.w3engineers.appshare"
+//                artifactId "appshare"
+                version "1.2.6"
+                name "appshare" // pom.project.name must be same as bintray.pkg.name
                 url "https://github.com/mimosaha/app-share"
 
                 licenses {
@@ -117,7 +123,7 @@ bintray {
         vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = "1.2.5"
+            name = "1.2.6"
         }
 
         licenses = ["Apache-2.0"]
