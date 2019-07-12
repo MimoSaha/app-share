@@ -26,6 +26,7 @@ public class InAppShareControl {
 
     public interface AppShareCallback {
         void closeRmService();
+        void successShared();
         void closeInAppShare();
     }
 

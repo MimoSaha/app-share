@@ -109,9 +109,9 @@ public class NetworkConfigureUtil {
         wifiConfiguration.SSID = SSID_Name;
 
         wifiConfiguration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-        wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+//        wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-        wifiConfiguration.preSharedKey = SSID_Key;
+//        wifiConfiguration.preSharedKey = SSID_Key;
 
         try {
             Method setWifiApMethod = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);

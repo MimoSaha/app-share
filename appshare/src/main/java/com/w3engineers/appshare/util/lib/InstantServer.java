@@ -1,6 +1,10 @@
 package com.w3engineers.appshare.util.lib;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.w3engineers.appshare.application.ui.InAppShareControl;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -415,6 +419,12 @@ public class InstantServer {
 
                         total += read;
                         int responsePercentage = (int) ((total * 100) / lengthOfFile);
+                        if (responsePercentage > 99 && TextUtils.equals(mimeType, MIME_DEFAULT_BINARY)) {
+                            InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
+                            if (appShareCallback != null) {
+                                appShareCallback.successShared();
+                            }
+                        }
                         // show percent using a callback
                     }
                 }

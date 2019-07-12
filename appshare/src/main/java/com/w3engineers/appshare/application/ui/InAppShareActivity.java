@@ -130,7 +130,7 @@ public class InAppShareActivity extends AppCompatActivity {
 
                     // Expose all server side info
                     wifiId.setText("\"" + NetworkConfigureUtil.getInstance().getNetworkName() + "\"");
-                    wifiPass.setText(getPasswordText());
+//                    wifiPass.setText(getPasswordText());
                     wifiUrl.setText(InAppShareUtil.getInstance().serverAddress);
                     qrCode.setImageBitmap(InAppShareUtil.getInstance().serverAddressBitmap);
 
