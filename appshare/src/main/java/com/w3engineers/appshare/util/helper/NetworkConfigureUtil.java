@@ -2,13 +2,25 @@ package com.w3engineers.appshare.util.helper;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
+import com.w3engineers.appshare.application.ui.InAppShareActivity;
 import com.w3engineers.appshare.application.ui.InAppShareControl;
+import com.w3engineers.appshare.util.wifidirect.MeshXAPListener;
+import com.w3engineers.appshare.util.wifidirect.WiFiDirectConfig;
+import com.w3engineers.appshare.util.wifidirect.WiFiDirectManagerLegacy;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Random;
 
 /*
  * ============================================================================
@@ -17,10 +29,12 @@ import java.lang.reflect.Method;
  * Proprietary and confidential
  */
 
-public class NetworkConfigureUtil {
+public class NetworkConfigureUtil implements MeshXAPListener {
 
     @NonNull
     public String SSID_Key = "m3s4rn9t3st";
+    @NonNull
+    public String SSID_IP = "192.168.43.20";
     @NonNull
     public String SSID_Name = "";
     private WifiManager wifiManager;
@@ -32,6 +46,8 @@ public class NetworkConfigureUtil {
     @SuppressLint("StaticFieldLeak")
     private static NetworkConfigureUtil networkConfigureUtil = new NetworkConfigureUtil();
 
+    private WiFiDirectManagerLegacy wiFiDirectManagerLegacy;
+
     private NetworkConfigureUtil() {
         context = InAppShareControl.getInstance().getAppShareContext();
         wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -42,12 +58,40 @@ public class NetworkConfigureUtil {
         return networkConfigureUtil;
     }
 
+
+    @Override
+    public void onSoftAPStateChanged(boolean isEnabled, String Ssid, String password) {
+        Log.d("WifiDirectTest", "ssid: " + Ssid + " Password: " + password);
+
+        if (isEnabled) {
+            SSID_Name = Ssid;
+            SSID_Key = password;
+
+            triggerNetworkCall();
+        }
+    }
+
+    @Override
+    public void onGOConnectedWith(Collection<WifiP2pDevice> wifiP2pDevices) {
+
+    }
+
+    @Override
+    public void onGODisconnectedWith(String ip) {
+
+    }
+
+    public void offWifiDirect() {
+        wiFiDirectManagerLegacy.destroy();
+    }
+
     public interface NetworkCallback {
         void networkName();
     }
 
     /**
      * Using a callback, when network is prepared to share app
+     *
      * @param networkCallback - get instance from implemented class
      * @return - this class for using cyclic api
      */
@@ -61,6 +105,7 @@ public class NetworkConfigureUtil {
      * Concern of this method is establish a network using hotspot or wifi.
      * If device have a established mesh network then use this network system
      * otherwise prepare a hotspot manually
+     *
      * @return - Using a boolean for accessing in disposable
      */
     public boolean startRouterConfigureProcess() {
@@ -74,25 +119,40 @@ public class NetworkConfigureUtil {
                 triggerNetworkCall();
 
             } else {*/
-                InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
-                if (appShareCallback != null) {
-                    appShareCallback.closeRmService();
-                }
+            InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
+            if (appShareCallback != null) {
+                appShareCallback.closeRmService();
+            }
 //                RmDataHelper.getInstance().stopRmService();
 //
-                isRmOff = true;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            isRmOff = true;
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+                //hotspotConfigure();
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                //turnOnHotspot();
+            }
 
-                hotspotConfigure();
+            startWifiDirect();
+
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+                setRandomIp();
+            }
 //            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    private void setRandomIp() {
+        Random ran = new Random();
+        int x = ran.nextInt(253) + 2;
+        SSID_IP = "192.168.43." + String.valueOf(x);
     }
 
     /**
@@ -109,9 +169,7 @@ public class NetworkConfigureUtil {
         wifiConfiguration.SSID = SSID_Name;
 
         wifiConfiguration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-//        wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-//        wifiConfiguration.preSharedKey = SSID_Key;
 
         try {
             Method setWifiApMethod = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
@@ -136,6 +194,7 @@ public class NetworkConfigureUtil {
 
     /**
      * Check device hotspot is enable or not
+     *
      * @return - wifi ap state
      */
     private boolean isApOn() {
@@ -161,6 +220,7 @@ public class NetworkConfigureUtil {
     /**
      * Using a boolean toggle for checking RM
      * is enable or disable
+     *
      * @return - the RM enable state
      */
     public boolean isRmOff() {
@@ -170,6 +230,7 @@ public class NetworkConfigureUtil {
     /**
      * Set RM off state false
      * When you restart the RM after completing the app sharing process
+     *
      * @param rmOff - set RM current state
      */
     public void setRmOff(boolean rmOff) {
@@ -181,11 +242,14 @@ public class NetworkConfigureUtil {
         return SSID_Key;
     }
 
+    public String getNetworkIp() {
+        return SSID_IP;
+    }
+
     @NonNull
     public String getNetworkName() {
         return SSID_Name;
     }
-
 
 
     /**
@@ -194,4 +258,56 @@ public class NetworkConfigureUtil {
     public void resetNetworkConfigureProperties() {
         SSID_Name = "";
     }
+
+    private String TAG = "GAMIRUDDIN";
+    private WifiManager.LocalOnlyHotspotReservation mReservation;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    void turnOnHotspot() {
+        if (!InAppShareActivity.permissionForOreo) {
+            Log.d(TAG, "Location service is off. Turn on location");
+            return;
+        }
+        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        if (manager != null) {
+            manager.startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback() {
+
+                @Override
+                public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
+                    super.onStarted(reservation);
+                    Log.d(TAG, "Wifi Hotspot is on now");
+                    mReservation = reservation;
+
+                    mReservation.getWifiConfiguration();
+                    SSID_Key = mReservation.getWifiConfiguration().preSharedKey;
+                    SSID_Name = mReservation.getWifiConfiguration().SSID;
+                    Log.d(TAG, "onStarted: key :" + SSID_Key + " ussid :" + SSID_Name);
+                    triggerNetworkCall();
+                }
+
+                @Override
+                public void onStopped() {
+                    //super.onStopped();
+                    Log.d(TAG, "onStopped: ");
+                }
+
+                @Override
+                public void onFailed(int reason) {
+                    //super.onFailed(reason);
+                    Log.d(TAG, "onFailed: ");
+                }
+            }, null);
+        }
+    }
+
+
+    private void startWifiDirect() {
+        WiFiDirectConfig wiFiDirectConfig = new WiFiDirectConfig();
+        wiFiDirectConfig.mIsGroupOwner = true;
+        wiFiDirectManagerLegacy = WiFiDirectManagerLegacy.getInstance(context, this, null,
+                wiFiDirectConfig);
+        wiFiDirectManagerLegacy.start();
+    }
+
 }

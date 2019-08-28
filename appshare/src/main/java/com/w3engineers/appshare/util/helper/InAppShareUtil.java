@@ -6,10 +6,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -103,13 +105,14 @@ public class InAppShareUtil {
     @Nullable
     public Bitmap serverInit() {
 
-        String myAddress = "192.168.43.1";
+        String myAddress = "192.168.49.1";
         int httpPort = random.nextInt(9000) + 1000;
 
         serverAddress = "http://" + myAddress + ":" + httpPort;
 
         String backApkPath = getBackUpApkPath();
 
+        Log.w("GAMIRUDDIN","scocket:  serverInit");
         InstantServer.getInstance().setPort(httpPort).setFilePath(backApkPath).startServer();
 
         serverAddressBitmap = getQrBitmap(serverAddress);

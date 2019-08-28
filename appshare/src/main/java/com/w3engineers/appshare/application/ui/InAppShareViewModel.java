@@ -71,6 +71,11 @@ public class InAppShareViewModel extends AndroidViewModel implements InAppShareU
         InAppShareUtil.getInstance().resetAppShareServerProperties();
     }
 
+    void offWifidirect(){
+        NetworkConfigureUtil.getInstance().offWifiDirect();
+    }
+
+
     public void checkInAppShareState() {
         appShareStateLiveData.postValue(InAppShareUtil.getInstance().isInAppShareEnable());
     }

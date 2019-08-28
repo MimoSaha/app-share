@@ -106,6 +106,7 @@ public class InstantServer {
                     try {
                         while (true) {
                             Socket socket = serverSocket.accept();
+                            Log.w("GAMIRUDDIN","scocket: "+socket.toString());
                             new HTTPRequestSession(socket, fileLocation);
                         }
                     } catch (IOException e) {
