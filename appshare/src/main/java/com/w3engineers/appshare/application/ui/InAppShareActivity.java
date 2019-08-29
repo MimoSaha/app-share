@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -182,6 +183,7 @@ public class InAppShareActivity extends AppCompatActivity {
         inAppShareViewModel.stopServerProcess();
         inAppShareViewModel.stopDirect();
         inAppShareViewModel.resetAllInfo();
+        inAppShareViewModel.resetRM();
     }
 
     private void disableState() {
@@ -192,8 +194,15 @@ public class InAppShareActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        // Reset and restart RM service if RM is stopped
-        inAppShareViewModel.resetRM();
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private InAppShareViewModel getViewModel() {
