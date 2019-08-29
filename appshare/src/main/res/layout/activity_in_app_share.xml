@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_5"
                 android:gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:fontFamily="@font/poppins_regular"
                 android:textSize="@dimen/text_size_16"
                 app:layout_constraintTop_toBottomOf="@+id/share_wifi_id" />/>

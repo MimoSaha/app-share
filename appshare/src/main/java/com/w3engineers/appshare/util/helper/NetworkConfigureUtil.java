@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pGroup;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.support.annotation.NonNull;
 
 import com.w3engineers.appshare.application.ui.InAppShareControl;
@@ -20,7 +22,7 @@ import java.lang.reflect.Method;
 public class NetworkConfigureUtil {
 
     @NonNull
-    public String SSID_Key = "m3s4rn9t3st";
+    public String SSID_Key = "";
     @NonNull
     public String SSID_Name = "";
     private WifiManager wifiManager;
@@ -44,10 +46,13 @@ public class NetworkConfigureUtil {
 
     public interface NetworkCallback {
         void networkName();
+
+        void networkFailed(String error);
     }
 
     /**
      * Using a callback, when network is prepared to share app
+     *
      * @param networkCallback - get instance from implemented class
      * @return - this class for using cyclic api
      */
@@ -61,38 +66,110 @@ public class NetworkConfigureUtil {
      * Concern of this method is establish a network using hotspot or wifi.
      * If device have a established mesh network then use this network system
      * otherwise prepare a hotspot manually
+     *
      * @return - Using a boolean for accessing in disposable
      */
     public boolean startRouterConfigureProcess() {
 
         try {
-            /*if (isApOn()) {
-                Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
-                WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
 
-                SSID_Name = wifiConfig.SSID;
-                triggerNetworkCall();
+            InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
+            if (appShareCallback != null) {
+                appShareCallback.closeRmService();
+            }
 
-            } else {*/
-                InAppShareControl.AppShareCallback appShareCallback = InAppShareControl.getInstance().getAppShareCallback();
-                if (appShareCallback != null) {
-                    appShareCallback.closeRmService();
-                }
-//                RmDataHelper.getInstance().stopRmService();
-//
-                isRmOff = true;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            isRmOff = true;
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                hotspotConfigure();
-//            }
+            wifiDirectConfigure();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    private WifiP2pManager manager;
+    private WifiP2pManager.Channel channel;
+
+    private void wifiDirectConfigure() {
+
+        if (!wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+
+            int loopMax = 10;
+            while (loopMax > 0 && wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
+                try {
+                    Thread.sleep(500);
+                    loopMax--;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        manager = (WifiP2pManager) context.getSystemService(context.WIFI_P2P_SERVICE);
+        channel = manager.initialize(context, context.getMainLooper(), null);
+
+        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                triggerNetworkFailed("Network configuration failed");
+            }
+        });
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        retrieveP2pInfo();
+    }
+
+    private void retrieveP2pInfo() {
+
+        manager.requestGroupInfo(channel, group -> {
+
+            if (group == null) {
+                triggerNetworkFailed("Network error. Please try again.");
+                return;
+            }
+
+            SSID_Name = group.getNetworkName();
+            SSID_Key = group.getPassphrase();
+
+            triggerNetworkCall();
+        });
+    }
+
+    public void stopRouterConfigureProcess() {
+
+        if (manager != null && channel != null) {
+            manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailure(int reason) {
+
+                }
+            });
+
+            manager = null;
+            channel = null;
+        }
     }
 
     /**
@@ -136,6 +213,7 @@ public class NetworkConfigureUtil {
 
     /**
      * Check device hotspot is enable or not
+     *
      * @return - wifi ap state
      */
     private boolean isApOn() {
@@ -158,9 +236,16 @@ public class NetworkConfigureUtil {
         }
     }
 
+    private void triggerNetworkFailed(String error) {
+        if (networkCallback != null) {
+            networkCallback.networkFailed(error);
+        }
+    }
+
     /**
      * Using a boolean toggle for checking RM
      * is enable or disable
+     *
      * @return - the RM enable state
      */
     public boolean isRmOff() {
@@ -170,6 +255,7 @@ public class NetworkConfigureUtil {
     /**
      * Set RM off state false
      * When you restart the RM after completing the app sharing process
+     *
      * @param rmOff - set RM current state
      */
     public void setRmOff(boolean rmOff) {
@@ -187,11 +273,11 @@ public class NetworkConfigureUtil {
     }
 
 
-
     /**
      * Reset all properties when in app share process is completed
      */
     public void resetNetworkConfigureProperties() {
         SSID_Name = "";
+        SSID_Key = "";
     }
 }

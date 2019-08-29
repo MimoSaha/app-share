@@ -103,7 +103,7 @@ public class InAppShareUtil {
     @Nullable
     public Bitmap serverInit() {
 
-        String myAddress = "192.168.43.1";
+        String myAddress = "192.168.43.49";
         int httpPort = random.nextInt(9000) + 1000;
 
         serverAddress = "http://" + myAddress + ":" + httpPort;

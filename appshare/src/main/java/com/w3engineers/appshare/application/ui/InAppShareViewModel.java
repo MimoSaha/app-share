@@ -39,6 +39,9 @@ public class InAppShareViewModel extends AndroidViewModel implements InAppShareU
     @NonNull
     public MutableLiveData<Boolean> appShareStateLiveData = new MutableLiveData<>();
 
+    @NonNull
+    public MutableLiveData<String> processFailedLiveData = new MutableLiveData<>();
+
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     /**
@@ -47,6 +50,10 @@ public class InAppShareViewModel extends AndroidViewModel implements InAppShareU
      */
     public void stopServerProcess() {
         InstantServer.getInstance().stopServer();
+    }
+
+    public void stopDirect() {
+        NetworkConfigureUtil.getInstance().stopRouterConfigureProcess();
     }
 
     /**
@@ -119,6 +126,11 @@ public class InAppShareViewModel extends AndroidViewModel implements InAppShareU
     @Override
     public void networkName() {
         initServerProcess();
+    }
+
+    @Override
+    public void networkFailed(String error) {
+        processFailedLiveData.postValue(error);
     }
 
     /**

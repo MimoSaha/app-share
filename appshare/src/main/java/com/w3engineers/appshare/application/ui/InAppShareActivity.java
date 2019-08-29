@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.w3engineers.appshare.R;
 import com.w3engineers.appshare.util.helper.InAppShareUtil;
@@ -74,9 +75,12 @@ public class InAppShareActivity extends AppCompatActivity {
 
         if (!permission) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
+                String packageName = getPackageName();
+                intent.setData(Uri.parse("package:" + packageName));
                 startActivityForResult(intent, 119);
+
             } else {
                 appShareStart();
             }
@@ -120,24 +124,28 @@ public class InAppShareActivity extends AppCompatActivity {
 
     private void uiOperationServerAddress() {
 
-        inAppShareViewModel.appShareStateLiveData.observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean isInAppShareEnable) {
-                if (isInAppShareEnable) {
+        inAppShareViewModel.appShareStateLiveData.observe(this, isInAppShareEnable -> {
+            if (isInAppShareEnable) {
 
-                    progressBar.setVisibility(View.GONE);
-                    scrollView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
 
-                    // Expose all server side info
-                    wifiId.setText("\"" + NetworkConfigureUtil.getInstance().getNetworkName() + "\"");
-//                    wifiPass.setText(getPasswordText());
-                    wifiUrl.setText(InAppShareUtil.getInstance().serverAddress);
-                    qrCode.setImageBitmap(InAppShareUtil.getInstance().serverAddressBitmap);
+                // Expose all server side info
+                wifiId.setText("\"" + NetworkConfigureUtil.getInstance().getNetworkName() + "\"");
+                wifiPass.setText(getPasswordText());
+                wifiUrl.setText(InAppShareUtil.getInstance().serverAddress);
+                qrCode.setImageBitmap(InAppShareUtil.getInstance().serverAddressBitmap);
 
-                } else {
-                    disableState();
-                }
+            } else {
+                disableState();
             }
+        });
+
+        inAppShareViewModel.processFailedLiveData.observe(this, errorMessage -> {
+            runOnUiThread(() -> {
+                Toast.makeText(InAppShareActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                finish();
+            });
         });
     }
 
@@ -172,6 +180,7 @@ public class InAppShareActivity extends AppCompatActivity {
         super.onDestroy();
 
         inAppShareViewModel.stopServerProcess();
+        inAppShareViewModel.stopDirect();
         inAppShareViewModel.resetAllInfo();
     }
 
