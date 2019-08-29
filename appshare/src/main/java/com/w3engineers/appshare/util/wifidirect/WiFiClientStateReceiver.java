@@ -84,6 +84,7 @@ public class WiFiClientStateReceiver {
         );
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void destroy() {
         try {
             mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);

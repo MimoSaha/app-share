@@ -23,6 +23,7 @@ package com.w3engineers.appshare.util.wifidirect;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -39,21 +40,15 @@ public class WiFiDirectManagerLegacy {
     private final int START_TASK_ONLY_SEARCH = 2;
     private final int START_TASK_ALL = 3;
     private final long SOFT_DELAY_TO_START_P2P_SERVICES = 1000;
-
-    public interface P2PCommunicatior {
-        void sendData(Peer peer, String data);
-    }
-
+    private WifiManager wifiManager;
     private WiFiStateMonitor mWiFiStateMonitor;
     private WiFiDirectConfig mWiFiDirectConfig;
-    private WiFiDirectConnectionManager mWiFiDirectConnectionManager;
     private Context mContext;
     private WiFiConnectionHelper mWiFiConnectionHelper;
     private static WiFiDirectManagerLegacy sWiFiDirectManagerLegacy;
     private SoftAccessPoint mSoftAccessPoint;
     private SoftAccessPointSearcher mSoftAccessPointSearcher;
     private WiFiClient mWiFiClient;
-    private MeshXLogListener mMeshXLogListener;
     private MeshXAPListener mMeshXAPListener;
     private MeshXLCListener mMeshXLCListener;
     private SoftAccessPoint.SoftAPStateListener mSoftAPStateListener = new SoftAccessPoint.SoftAPStateListener() {
@@ -88,9 +83,7 @@ public class WiFiDirectManagerLegacy {
     private SoftAccessPointSearcher.ServiceFound mServiceFound = new SoftAccessPointSearcher.ServiceFound() {
         @Override
         public void onServiceFoundSuccess(String ssid, String passPhrase, WifiP2pDevice p2pDevice) {
-            if (mMeshXLogListener != null) {
-                mMeshXLogListener.onLog("[FOUND] SSID - " + ssid + "::Passphrase - " + passPhrase);
-            }
+
 
             if (mSoftAccessPoint != null) {
                 mSoftAccessPoint.Stop();
@@ -104,26 +97,6 @@ public class WiFiDirectManagerLegacy {
 
             mWiFiClient.connect(ssid, passPhrase);
 
-            if (mMeshXLogListener != null) {
-
-                StringBuilder devices = new StringBuilder();
-                //Building device details log
-                if (mSoftAccessPoint != null) {
-                    Collection<WifiP2pDevice> wifiP2pDevices = mSoftAccessPoint.getConnectedPeers();
-                    for (WifiP2pDevice wifiP2pDevice : wifiP2pDevices) {
-                        devices.append(wifiP2pDevice.deviceName).append("-").
-                                append(wifiP2pDevice.deviceAddress).append(",");
-                    }
-                    //removing last comma
-                    int index = devices.lastIndexOf(",");
-                    if (index != -1) {
-                        devices.replace(index, index + 1, "");
-                    }
-                }
-
-                mMeshXLogListener.onLog("[NOT-CONNECTING] " + (mSoftAccessPoint == null ?
-                        "null" : ("count::" + mSoftAccessPoint.getConnectedPeersCount() + "::" + devices)));
-            }
         }
     };
 
@@ -161,9 +134,6 @@ public class WiFiDirectManagerLegacy {
         public void onTimeOut() {
             if (mWiFiClient != null && !mWiFiClient.isConnected()) {
 
-                if (mMeshXLogListener != null) {
-                    mMeshXLogListener.onLog("[OnTimeOut]");
-                }
 
                 if (mWiFiDirectConfig != null && mWiFiDirectConfig.mIsClient) {
                     reAttemptServiceDiscovery();
@@ -181,9 +151,6 @@ public class WiFiDirectManagerLegacy {
                 mMeshXLCListener.onDisconnectWithGO();
             }
 
-            if (mMeshXLogListener != null) {
-                mMeshXLogListener.onLog("[onDisconnected]");
-            }
             reAttemptServiceDiscovery();
         }
 
@@ -192,9 +159,7 @@ public class WiFiDirectManagerLegacy {
          * while it has any valid client connected
          */
         private void reAttemptServiceDiscovery() {
-            if (mMeshXLogListener != null) {
-                mMeshXLogListener.onLog("[reAttemptServiceDiscovery]");
-            }
+
             MeshLog.v("[reAttemptServiceDiscovery]");
 
             AndroidUtil.postDelay(() -> {
@@ -247,13 +212,14 @@ public class WiFiDirectManagerLegacy {
         mWiFiDirectConfig = wiFiDirectConfig;
         mContext = context;
         mWiFiConnectionHelper = new WiFiConnectionHelper(mContext);
-        mWiFiDirectConnectionManager = new WiFiDirectConnectionManager(meshXAPListener, meshXLCListener);
         mMeshXAPListener = meshXAPListener;
         this.mMeshXLCListener = meshXLCListener;
 
         mWiFiClient = new WiFiClient(mContext);
         mWiFiClient.setConnectionListener(mConnectionListener);
-        mWiFiClient.setMeshXLogListener(mMeshXLogListener);
+
+        wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
     }
 
     public void start() {
@@ -302,18 +268,36 @@ public class WiFiDirectManagerLegacy {
             }
         });*/
 
-        int task = -1;
-        if (mWiFiDirectConfig.mIsClient && mWiFiDirectConfig.mIsGroupOwner) {
-            task = START_TASK_ALL;
+        if (!wifiManager.isWifiEnabled()) {
+            // first off wifi
+            wifiManager.setWifiEnabled(true);
 
-        } else if (mWiFiDirectConfig.mIsGroupOwner) {
-            task = START_TASK_ONLY_AP;
+            int loopMax = 10;
+            while (loopMax > 0 && wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
+                try {
+                    Thread.sleep(500);
+                    loopMax--;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
-        } else if (mWiFiDirectConfig.mIsClient) {
-            task = START_TASK_ONLY_SEARCH;
+            mWiFiConnectionHelper.disconnect();
+            mWiFiConnectionHelper.disableAllConfiguredWiFiNetworks();
+
+            int task = -1;
+            if (mWiFiDirectConfig.mIsClient && mWiFiDirectConfig.mIsGroupOwner) {
+                task = START_TASK_ALL;
+
+            } else if (mWiFiDirectConfig.mIsGroupOwner) {
+                task = START_TASK_ONLY_AP;
+
+            } else if (mWiFiDirectConfig.mIsClient) {
+                task = START_TASK_ONLY_SEARCH;
+            }
+
+            start(task);
         }
-
-        start(task);
     }
 
     public void start(int startTask) {
@@ -322,7 +306,6 @@ public class WiFiDirectManagerLegacy {
             if (mWiFiDirectConfig.mIsGroupOwner) {
                 if (mSoftAccessPoint == null) {
                     mSoftAccessPoint = new SoftAccessPoint(mContext, mSoftAPStateListener);
-                    mSoftAccessPoint.setMeshXLogListener(mMeshXLogListener);
 
                     mSoftAccessPoint.start();
                 } else {
@@ -361,45 +344,12 @@ public class WiFiDirectManagerLegacy {
         }
     }
 
-    /**
-     * Re broadcast service
-     */
-    // TODO: 7/30/2019 check by not removing, only broadcasting
-    public boolean reBroadCastService() {
-        if (mSoftAccessPoint != null && mSoftAccessPoint.mIsAlive) {
-            mSoftAccessPoint.stopLocalServices(isRemoved -> {
-                if (isRemoved && mSoftAccessPoint != null) {
-                    mSoftAccessPoint.startLocalService();
-                }
-                MeshLog.i(" [MeshX]Rebroadcasting:isRemoved-" + isRemoved);
-            });
 
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isAlive() {
-        return (mSoftAccessPoint != null && mSoftAccessPoint.mIsAlive) ||
-                (mSoftAccessPointSearcher != null && mSoftAccessPointSearcher.mIsAlive);
-    }
-
-    public boolean isMeMaster() {
-        return (mSoftAccessPoint != null && mSoftAccessPoint.mIsAlive);
-    }
-
-    public boolean isConnecting() {
-        return mSoftAccessPointSearcher != null && mSoftAccessPointSearcher.mIsConnecting;
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void destroy() {
         sWiFiDirectManagerLegacy = null;
 
-        //FIXME: context null issue
-        // mContext = null;
 
-        //todo
         if (mMeshXAPListener != null) {
             mMeshXAPListener.onSoftAPStateChanged(false, null, null);
         }
@@ -427,33 +377,4 @@ public class WiFiDirectManagerLegacy {
         }
     }
 
-    public void setMeshXLogListener(MeshXLogListener meshXLogListener) {
-        mMeshXLogListener = meshXLogListener;
-    }
-
-    public void toggleGO(boolean newState) {
-
-        if (newState != mWiFiDirectConfig.mIsGroupOwner) {
-            mWiFiDirectConfig.mIsGroupOwner = newState;
-            if (newState) {
-                start(START_TASK_ONLY_AP);
-            } else {
-                mSoftAccessPoint.Stop();
-            }
-        }
-    }
-
-    public void toggleLC(boolean newState) {
-
-        if (newState != mWiFiDirectConfig.mIsClient) {
-            mWiFiDirectConfig.mIsClient = newState;
-            if (newState) {
-                start(START_TASK_ONLY_SEARCH);
-            } else {
-                if (mSoftAccessPointSearcher != null) {
-                    mSoftAccessPointSearcher.stop();
-                }
-            }
-        }
-    }
 }

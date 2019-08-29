@@ -28,7 +28,7 @@ public class Constants {
          * performance.
          */
 //        String TYPE = "Fe";
-        String TYPE = "Az";
+        String TYPE = "App_Share";
         long DISCOVERY_DELAY = 1000;//In ms
     }
 }

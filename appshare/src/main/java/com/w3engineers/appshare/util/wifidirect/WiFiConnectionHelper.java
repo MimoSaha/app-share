@@ -47,14 +47,15 @@ public class WiFiConnectionHelper {
         return false;
     }
 
+
     /**
      * Disable all configured wifi network. We want to stop any automatic connection.
      */
+
     public void disableAllConfiguredWiFiNetworks() {
         List<WifiConfiguration> configuredNetworks = mWifiManager.getConfiguredNetworks();
 
         if(configuredNetworks != null) {
-
             for (WifiConfiguration wifiConfiguration : configuredNetworks) {
                 if (wifiConfiguration != null && wifiConfiguration.networkId != -1) {
                     mWifiManager.disableNetwork(wifiConfiguration.networkId);
@@ -63,9 +64,6 @@ public class WiFiConnectionHelper {
         }
     }
 
-    /**
-     * Disable all configured wifi network. We want to stop any automatic connection.
-     */
     public int getConfiguredWiFiNetworkId(String SSID) {
         if(TextUtils.isEmpty(SSID)) {
             return -1;

@@ -104,10 +104,6 @@ public abstract class P2PServiceSearcher implements WifiP2pManager.ChannelListen
                         final String networkSSID = separated[0];
                         final String networkPass = separated[1];
                         final String serviceAdvertisersBtName = separated.length > 2 ? separated[2] : null;
-                        MeshLog.i(" P2P networkSSID " + networkSSID);
-                        MeshLog.i(" P2P networkPass " + networkPass);
-                        MeshLog.i("  P2P serviceAdvertisersBtName " + serviceAdvertisersBtName);
-                        MeshLog.i("  BT List: " + ConnectionLinkCache.getInstance().getConnectedBtSet());
 
                         if (ConnectionLinkCache.getInstance().isBtNameExistInConnectedSet(serviceAdvertisersBtName)
                                 || ConnectionLinkCache.getInstance().isSsidNameExistInConnectedSet(networkSSID)) {

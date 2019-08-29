@@ -10,7 +10,6 @@ import java.net.SocketException;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import static com.w3engineers.appshare.util.wifidirect.Constant.MASTER_IP_ADDRESS;
 
 /**
  * ============================================================================
@@ -40,9 +39,6 @@ public class P2PUtil {
         return wifiP2pDevices != null && wifiP2pDevices.size() > 0;
     }
 
-    public static boolean hasNoItem(Collection<WifiP2pDevice> wifiP2pDevices) {
-        return !hasItem(wifiP2pDevices);
-    }
 
     public static WiFiDevicesList getList(Collection<WifiP2pDevice> wifiP2pDevices) {
         if (hasItem(wifiP2pDevices)) {
@@ -54,42 +50,6 @@ public class P2PUtil {
         return null;
     }
 
-    public static String getLogString(Collection<WifiP2pDevice> wifiP2pDevices) {
-        if (hasItem(wifiP2pDevices)) {
-            StringBuilder log = new StringBuilder();
-            for (WifiP2pDevice wifiP2pDevice : wifiP2pDevices) {
-                log.append("-").append(wifiP2pDevice.deviceAddress);
-            }
-            return log.toString();
-        }
-
-        return null;
-    }
-
-    public static String getLocalP2PIpAddress() {
-        // TODO: 8/9/2019 Use {@link NetworkInterface.getByName()} method for fastness and accuracy
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                if (intf != null && intf.getName() != null && intf.getName().startsWith("p2p")) {
-                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                        InetAddress inetAddress = enumIpAddr.nextElement();
-                        if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                            return inetAddress.getHostAddress();
-                        }
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public static boolean isMeGO() {
-        String localp2pIpAddress = getLocalP2PIpAddress();
-        return MASTER_IP_ADDRESS.equals(localp2pIpAddress);
-    } // getLocalIpAddress()
 
     /**
      * Is the connected SSID is WiFi direct or P2P SSID

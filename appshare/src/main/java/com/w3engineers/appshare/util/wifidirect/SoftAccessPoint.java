@@ -50,7 +50,6 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
     private Context mContext;
     private PeerReceiver mPeerReceiver;
     private String mNetworkName = "", mPassphrase = "", mInetAddress;
-    private MeshXLogListener mMeshXLogListener;
     private WiFiDevicesList mLastWifiP2pDeviceList;
     private SoftAPStateListener mSoftAPStateListener;
     private String mMyBTName;
@@ -111,9 +110,6 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
         }
     }
 
-    public void setMeshXLogListener(MeshXLogListener meshXLogListener) {
-        mMeshXLogListener = meshXLogListener;
-    }
 
     private WifiP2pManager.GroupInfoListener mGroupInfoListener = new WifiP2pManager.GroupInfoListener() {
         @Override
@@ -134,10 +130,6 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
 
                     mNetworkName = group.getNetworkName();
                     mPassphrase = group.getPassphrase();
-                    if (mMeshXLogListener != null) {
-                        mMeshXLogListener.onLog(OWN_AP_LOG_PREFIX + " SSID - " + mNetworkName + "::Passphrase - " + mPassphrase);
-                    }
-
 
 //                    mMyBTName = "sample string to represent my BT name";
                     MeshLog.e("BT NAME ADDED -> " + mMyBTName);
@@ -324,12 +316,6 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
         return mLastWifiP2pDeviceList == null ? 0 : mLastWifiP2pDeviceList.size();
     }
 
-    /**
-     * @return how many peers are connected at this moment with this service???
-     */
-    public Collection<WifiP2pDevice> getConnectedPeers() {
-        return mLastWifiP2pDeviceList;
-    }
 
     private P2PStateListener mP2PStateListener = new P2PStateListener() {
         @Override
@@ -352,7 +338,6 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
 
         @Override
         public void onP2PConnectionChanged(Collection<WifiP2pDevice> wifiP2pDevices) {
-            String st = P2PUtil.getLogString(wifiP2pDevices);
 
             WiFiDevicesList devices = P2PUtil.getList(wifiP2pDevices);
             if (P2PUtil.hasItem(devices)) {
@@ -377,12 +362,12 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
                     //Received mac missing earlier entry so possible disconnection occurred
                     if (possibleDisconnectedList.size() > 0) {
                         MeshLog.v("[Meshx]Possible remove event for GO");
-                        new DeviceDisconnector().startWatching();
+                        //new DeviceDisconnector().startWatching();
                     }
                 }
             } else if (P2PUtil.hasItem(mLastWifiP2pDeviceList)) {
 
-                new DeviceDisconnector().startWatching();
+               // new DeviceDisconnector().startWatching();
             }
         }
 
@@ -424,36 +409,5 @@ public class SoftAccessPoint implements WifiP2pManager.ConnectionInfoListener, W
         }
     }
 
-    private class DeviceDisconnector {
 
-        private List<String> mIpList;
-        private Executor mExecutor;
-        private Pinger.PingListener mPingListener = (ip, isReachable) -> {
-
-            if (!isReachable && !TextUtils.isEmpty(ip)) {
-                mSoftAPStateListener.onSoftApDisConnectedWithNodes(ip);
-            }
-        };
-
-        public DeviceDisconnector() {
-        }
-
-        void startWatching() {
-
-           /* new Thread(() -> {
-                mIpList = RouteManager.getInstance().getConnectedIpAddress(RoutingEntity.Type.WiFi);
-                if(CollectionUtil.hasItem(mIpList)) {
-
-                    mExecutor = Executors.newFixedThreadPool(mIpList.size());
-
-                    MeshLog.v("[watching] pinging: %s", mIpList.toString());
-
-                    for (String ip : mIpList) {
-
-                        mExecutor.execute( new Pinger(ip, mPingListener));
-                    }
-                }
-            }).start();*/
-        }
-    }
 }

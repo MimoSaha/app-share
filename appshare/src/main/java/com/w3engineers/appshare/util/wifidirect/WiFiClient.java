@@ -42,7 +42,7 @@ public class WiFiClient implements WiFiClientState {
     private WiFiConnectionHelper mWiFiHelper;
     private WiFiClientStateReceiver mWiFiClientStateReceiver;
     private volatile boolean mIsConnected;
-    private MeshXLogListener mMeshXLogListener;
+
     private ConneectionListener mConnectionListener;
     private Runnable mTimeOutTask = new Runnable() {
         @Override
@@ -60,9 +60,6 @@ public class WiFiClient implements WiFiClientState {
         mWiFiHelper = new WiFiConnectionHelper(context);
     }
 
-    public void setMeshXLogListener(MeshXLogListener meshXLogListener) {
-        mMeshXLogListener = meshXLogListener;
-    }
 
     /**
      * Start connecting with provided ssid with given passphrase. This method works only
@@ -74,11 +71,6 @@ public class WiFiClient implements WiFiClientState {
     public boolean connect(String ssid, String passPhrase) {
 
         if(!mIsConnected) {
-            if (mMeshXLogListener != null) {
-                mMeshXLogListener.onLog("[CONNECTING] SSID - " + ssid + "::Passphrase - "
-                        + passPhrase);
-            }
-
             if(mWiFiHelper.connect(ssid, passPhrase)) {
                 AndroidUtil.postBackground(mTimeOutTask, WIFI_CONNECTION_TIMEOUT);
             }
@@ -106,6 +98,7 @@ public class WiFiClient implements WiFiClientState {
         mConnectionListener = conneectionListener;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void destroy() {
         if(mWiFiClientStateReceiver != null) {
             mWiFiClientStateReceiver.destroy();
@@ -127,9 +120,6 @@ public class WiFiClient implements WiFiClientState {
                 mConnectionListener.onConnected(mWiFiHelper.getConnectionInfo());
             }
 
-            if (mMeshXLogListener != null) {
-                mMeshXLogListener.onLog("[Connected]");
-            }
         }
     }
 
