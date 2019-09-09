@@ -41,7 +41,7 @@ public class InAppShareUtil {
     @NonNull
     public String serverAddress = "";
     @Nullable
-    public Bitmap serverAddressBitmap = null;
+    public Bitmap serverAddressBitmap = null, wifiAddressBitmap = null;
 
     @NonNull
     public static InAppShareUtil getInstance() {
@@ -62,7 +62,7 @@ public class InAppShareUtil {
      * @return - Qr bitmap
      */
     @Nullable
-    public Bitmap getQrBitmap(@NonNull String Value) {
+    public synchronized Bitmap getQrBitmap(@NonNull String Value) {
         Bitmap bitmap = null;
 
         try {
@@ -111,6 +111,8 @@ public class InAppShareUtil {
         String backApkPath = getBackUpApkPath();
 
         InstantServer.getInstance().setPort(httpPort).setFilePath(backApkPath).startServer();
+
+        wifiAddressBitmap = getQrBitmap("WIFI:S:" + NetworkConfigureUtil.getInstance().getNetworkName() + ";T:WPA;P:" + NetworkConfigureUtil.getInstance().getNetworkPass() + ";");
 
         serverAddressBitmap = getQrBitmap(serverAddress);
 
@@ -221,7 +223,7 @@ public class InAppShareUtil {
     }
 
     public boolean isInAppShareEnable() {
-        return !TextUtils.isEmpty(serverAddress) && serverAddressBitmap != null;
+        return !TextUtils.isEmpty(serverAddress) && serverAddressBitmap != null && wifiAddressBitmap != null;
     }
 
     /**
@@ -231,5 +233,6 @@ public class InAppShareUtil {
         inAppShareCallback = null;
         serverAddress = "";
         serverAddressBitmap = null;
+        wifiAddressBitmap = null;
     }
 }

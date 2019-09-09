@@ -8,6 +8,7 @@
     <string name="using_password">using the password %s</string>
     <string name="hotspot_id_pass">ID: %s\nPassword: %s</string>
     <string name="qr_code_text">If your device has a QR scanner,\nscan the QR code bellow to get this app</string>
+    <string name="qr_code_wifi_text">If your device has a QR scanner,\nscan the QR code to connect the network</string>
     <string name="enter_url_text">Enter the following URL into the browser</string>
 
     <string name="qr_content_description">QR Code</string>

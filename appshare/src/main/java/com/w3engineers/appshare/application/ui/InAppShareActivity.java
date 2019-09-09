@@ -45,7 +45,7 @@ public class InAppShareActivity extends AppCompatActivity {
     private GifImageView progressBar;
     private ScrollView scrollView;
     private TextView wifiId, wifiPass, wifiUrl;
-    private ImageView qrCode;
+    private ImageView qrCode, wifiQrCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +121,7 @@ public class InAppShareActivity extends AppCompatActivity {
         wifiPass = findViewById(R.id.share_wifi_id_pass);
         wifiUrl = findViewById(R.id.text_view_url);
         qrCode = findViewById(R.id.image_view_qr_code);
+        wifiQrCode = findViewById(R.id.image_view_qr_code_network);
     }
 
     private void uiOperationServerAddress() {
@@ -136,6 +137,7 @@ public class InAppShareActivity extends AppCompatActivity {
                 wifiPass.setText(getPasswordText());
                 wifiUrl.setText(InAppShareUtil.getInstance().serverAddress);
                 qrCode.setImageBitmap(InAppShareUtil.getInstance().serverAddressBitmap);
+                wifiQrCode.setImageBitmap(InAppShareUtil.getInstance().wifiAddressBitmap);
 
             } else {
                 disableState();
