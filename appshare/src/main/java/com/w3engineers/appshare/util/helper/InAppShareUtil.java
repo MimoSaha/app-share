@@ -134,7 +134,9 @@ public class InAppShareUtil {
     public String getBackUpApkPath() {
         Context context = InAppShareControl.getInstance().getAppShareContext();
 
-        try {
+        // This part is check the apk is available and also check the existing version
+
+        /*try {
             String myApplicationName = context.getResources().getString(R.string.app_name) + ".apk";
             String backupFolder = ".backup";
 
@@ -159,7 +161,7 @@ public class InAppShareUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return backupApkAndGetPath(context);
     }
 
