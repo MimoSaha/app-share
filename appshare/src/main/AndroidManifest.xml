@@ -14,7 +14,8 @@
     <application
         android:theme="@style/AppTheme">
 
-        <activity android:name=".application.ui.InAppShareActivity" />
+        <activity android:name=".application.ui.InAppShareActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 
