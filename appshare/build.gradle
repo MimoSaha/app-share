@@ -10,13 +10,13 @@ android {
     compileSdkVersion 28
 
     group='com.w3engineers.appshare'
-    version "1.3.4"
+    version "1.3.5"
 
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName '1.3.4'
+        versionName '1.3.5'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         archivesBaseName = "appshare"
@@ -73,7 +73,7 @@ install {
 
 //                groupId "com.w3engineers.appshare"
 //                artifactId "appshare"
-                version "1.3.4"
+                version "1.3.5"
                 name "appshare" // pom.project.name must be same as bintray.pkg.name
                 url "https://github.com/mimosaha/app-share"
 
@@ -123,7 +123,7 @@ bintray {
         vcsUrl = "https://github.com/mimosaha/app-share.git"
 
         version {
-            name = "1.3.4"
+            name = "1.3.5"
         }
 
         licenses = ["Apache-2.0"]
